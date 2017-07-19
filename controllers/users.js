@@ -15,7 +15,7 @@ exports.signup = (req, res, next) => {
 
 exports.signin = (req, res, next) => {
     console.log(req.user);
-    res.sendStatus(200)
+    res.redirect('/');
 };
 
 exports.logout = (req, res, next) => {
