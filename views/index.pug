@@ -1,5 +1,30 @@
 extends layout
 
 block content
-  h1= title
-  p Welcome to #{title}
+  .row
+    .container
+      .row
+        .input-field.col.s4.offset-s2
+          input#my-peer-id(type='text', readonly='readonly')
+          label(for='my-peer-id') Meu Peer Id
+        .input-field.col.s4
+          input#destination-peer(type='text')
+          label(for='destination-peer') Peer Destino
+        .col.s4.offset-s2
+          a#connect.waves-effect.waves-light.btn
+            i.material-icons.left cloud
+            | Conectar
+        .col.s4.pull-s1
+          a#close.waves-effect.waves-light.btn
+            i.material-icons.left cloud
+            | Fechar conexão
+      .row
+        .file-field.input-field.col.s4.offset-s2
+          .btn
+            span File
+            input#file(type='file')
+          .file-path-wrapper
+            input.file-path.validate(type='text')
+
+  script(src='javascripts/peer-init.js')
+
