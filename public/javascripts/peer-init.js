@@ -1,4 +1,3 @@
-const connectedPeers = [];
 const connections = [];
 
 var peer = new Peer({ key: 'oz9b3ni30qtcsor', debug: 2, config: {'iceServers': [
@@ -8,68 +7,118 @@ var peer = new Peer({ key: 'oz9b3ni30qtcsor', debug: 2, config: {'iceServers': [
 ]}});
 
 peer.on('open', id => {
-    $('#my-peer-id').val(id)
+    $('#my-peer-id').val(id);
     Materialize.updateTextFields();
 });
 
 const connectBtn = document.querySelector('#connect');
 connectBtn.addEventListener('click', () => {
     const destinyPeer = document.querySelector('#destination-peer').value;
+    const user = document.querySelector('#my-peer-id').getAttribute('data-user');
     const newConnection = peer.connect(destinyPeer, {
-        label: 'file', reliable: true
+        label: 'file', reliable: true, metadata: {user}
     });
-    // connectedPeers.push()
 
     newConnection.on('open', () => {
-        console.log('opened connection!');
+        Materialize.toast('Conectado!', 5000);
+        const div = document.createElement('div');
+        div.innerHTML =` <div class="chip"> ${destinyPeer}
+                    <i id="${destinyPeer}" class="close material-icons">close</i>
+                    </div>`
+        const users = document.querySelector('.users');
+        users.appendChild(div);
+
+        const closeBtn = document.querySelector('.close');
+        closeBtn.addEventListener('click', function(e)  {
+            newConnection.close();
+            // const peerId = this.id;
+            // connections.forEach(function (c, i) {
+            //     if (c.peer === peerId){
+            //         c.close();
+            //         Materialize.toast('Conexão encerrada!', 5000);
+            //     }
+            // })
+        });
+
         connections.push(newConnection);
         connect(newConnection);
     });
+
+    newConnection.on('close', () => cleanView())
 });
 
 const connect = connection => {
     connection.on('data', data => {
         console.log('Receiving data...');
+        console.log(data);
         if(data.constructor === ArrayBuffer) {
             const dataView = new Uint8Array(data);
             const dataBlob = new Blob([dataView]);
             const url = window.URL.createObjectURL(dataBlob);
-            console.log(url)
+            const a = document.createElement('a');
+            a.innerHTML = `<a download target="_blank" href="${url}">Download de Arquivo (Enviado por ${connection.metadata.user})</a> <br>`
+            const files = document.querySelector(`.files`);
+            files.appendChild(a);
+            Materialize.toast("Você recebeu um novo arquivo!", 5000);
         }
-
-        // 	$('#' + c.peer).find('.messages').append('<div><span class="file">' +
-        //     c.peer + ' has sent you a <a target="_blank" href="' + url + '">file</a>.</span></div>');
-        // }
     })
 };
 
 const fileInput = document.querySelector('#file');
 fileInput.addEventListener('change', function(){
     const file = this.files[0];
-    console.log(file.type)
-    // connections[0].send("ooookkk");
     for(let i in connections){
         console.log(`sending to connection number ${i}`);
         connections[i].send(file);
     }
 
 });
-// peer.on('connection', connect );
-
-const closeBtn = document.querySelector('#close');
-closeBtn.addEventListener('click', e => {
-
-});
 
 peer.on('close', function() {
-
+    Materialize.toast('Usuário se desconectou!', 5000);
 });
-
 
 peer.on('connection', connect);
 
 
-// var conn = peer.connect('another-peers-id');
-// conn.on('open', function(){
-//   conn.send('hi!');
-// });
+peer.on('connection', conn => {
+    const user = conn.metadata.user;
+    Materialize.toast( `"${user}" se conectou a você!`, 5000);
+    const div = document.createElement('div');
+    // li.innerHTML = `<li id="${conn.peer}" class="collection-item"> ${user} </li>`;
+    div.innerHTML =` <div  class="chip"> ${user}
+                        <i id="${conn.peer}" class="close material-icons">close</i>
+                    </div> `;
+    const users = document.querySelector('.users');
+    users.appendChild(div);
+
+    const closeBtn = document.querySelector('.close');
+    closeBtn.addEventListener('click', function(e)  {
+        conn.close();
+
+    });
+
+    conn.on('close', function () {
+        cleanView();
+    })
+});
+
+
+const cleanView = () => {
+    const input = document.querySelector('#destination-peer');
+    input.value = '';
+
+    const users = document.querySelector('.users');
+    const files = document.querySelector('.files');
+
+    while (users.hasChildNodes()) {
+        users.removeChild(users.lastChild);
+    }
+
+    while (files.hasChildNodes()) {
+        files.removeChild(files.lastChild);
+    }
+
+    Materialize.toast('Conexão encerrada!', 5000);
+
+};
