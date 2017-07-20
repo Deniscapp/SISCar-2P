@@ -1,0 +1,24 @@
+extends layout
+
+block content
+    .row
+        .container
+            .col.l6.offset-l3
+                .card
+                    //.card-image.waves-effect.waves-block.waves-light
+                        //img.activator(src='images/office.jpg')
+                    .card-content
+                        span.center-align.card-title.grey-text.text-darken-4 Novo Usuário
+
+                        .row
+                            form(method='POST' action='/users/signup')
+                                .input-field.col.s8.offset-l2
+                                    i.material-icons.prefix email
+                                    input#username(type='text', name='username')
+                                    label(for='username') Username
+                                .input-field.col.s8.offset-l2
+                                    i.material-icons.prefix lock
+                                    input#password(type='password', name='password')
+                                    label(for='password') Senha
+
+                                button.col.l5.offset-l4.center.btn.waves-effect.waves-light(type="submit") Criar Usuário
