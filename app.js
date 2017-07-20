@@ -43,7 +43,8 @@ passport.use(new LocalStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
-mongoose.connect('mongodb://localhost/siscar2p');
+// mongoose.connect('mongodb://localhost/siscar2p');
+mongoose.connect('mongodb://root:root@ds163612.mlab.com:63612/siscar2p');
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
