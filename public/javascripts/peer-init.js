@@ -74,9 +74,9 @@ fileInput.addEventListener('change', function(){
 
 });
 
-peer.on('close', function() {
-    Materialize.toast('Usuário se desconectou!', 5000);
-});
+// peer.on('close', function() {
+//     Materialize.toast('Usuário se desconectou!', 5000);
+// });
 
 peer.on('connection', connect);
 
